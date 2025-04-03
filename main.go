@@ -21,7 +21,29 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func reader(conn *websocket.Conn) {
+func wsHandler(writer http.ResponseWriter, request *http.Request) {
+	// receive the http request from the client and upgrade to websocket protocol
+	conn, err := upgrader.Upgrade(writer, request, nil)
+	if err != nil {
+		fmt.Println("Error upgrading connection to websocket: ", err)
+	}
+
+	fmt.Println("Client connected")
+
+	// close the connection after exit
+	//defer func(conn *websocket.Conn) {
+	//	err := conn.Close()
+	//	if err != nil {
+	//		fmt.Println("Error closing connection:", err)
+	//	}
+	//}(conn)
+
+	go handleConnection(conn)
+}
+
+func handleConnection(conn *websocket.Conn) {
+	defer conn.Close()
+
 	for {
 		// read the message
 		_, msg, err := conn.ReadMessage()
@@ -37,24 +59,4 @@ func reader(conn *websocket.Conn) {
 			break
 		}
 	}
-}
-
-func wsHandler(writer http.ResponseWriter, request *http.Request) {
-	// receive the http request from the client and upgrade to websocket protocol
-	conn, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		fmt.Println("Error upgrading connection to websocket: ", err)
-	}
-
-	fmt.Println("Client connected")
-
-	// close the connection after exit
-	defer func(conn *websocket.Conn) {
-		err := conn.Close()
-		if err != nil {
-			fmt.Println("Error closing connection:", err)
-		}
-	}(conn)
-
-	reader(conn)
 }
