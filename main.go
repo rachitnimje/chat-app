@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/rachitnimje/chat-app/db"
+	"github.com/rachitnimje/chat-app/models"
 	"net/http"
 	"sync"
 )
@@ -14,18 +16,36 @@ var mutex = &sync.Mutex{}
 func main() {
 	// each ws connection runs in its own goroutine
 	http.HandleFunc("/ws", wsHandler)
+
+	err := db.ConnectDB()
+	if err != nil {
+		fmt.Println("database connection error: ", err)
+	}
+
+	err = models.Migrate(db.DB)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//user := models.User{
+	//	Username: "rachitnimje",
+	//	Name:     "rachit",
+	//	Password: "cricket",
+	//}
+	//db.DB.Create(&user)
+
 	// we create a separate goroutine for broadcasting messages
 	go handleMessages()
 
 	fmt.Println("Websocket server started on port 8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("Error starting the websocket server: ", err)
 	}
 }
 
-var upgrader = websocket.Upgrader{
+var upgrade = websocket.Upgrader{
 	CheckOrigin: func(request *http.Request) bool {
 		return true
 	},
@@ -33,7 +53,7 @@ var upgrader = websocket.Upgrader{
 
 func wsHandler(writer http.ResponseWriter, request *http.Request) {
 	// receive the http request from the client and upgrade to websocket protocol
-	conn, err := upgrader.Upgrade(writer, request, nil)
+	conn, err := upgrade.Upgrade(writer, request, nil)
 	if err != nil {
 		fmt.Println("Error upgrading connection to websocket: ", err)
 	}
