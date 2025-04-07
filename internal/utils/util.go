@@ -32,7 +32,7 @@ func WriteJSONResponse(w http.ResponseWriter, response Response) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
 
-	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
 	}
 }
