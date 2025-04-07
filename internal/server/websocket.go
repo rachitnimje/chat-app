@@ -1,10 +1,8 @@
-package main
+package handlers
 
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
-	"github.com/rachitnimje/chat-app/db"
-	"github.com/rachitnimje/chat-app/models"
 	"net/http"
 	"sync"
 )
@@ -13,45 +11,13 @@ var clients = make(map[*websocket.Conn]struct{})
 var broadcastChannel = make(chan []byte)
 var mutex = &sync.Mutex{}
 
-func main() {
-	// each ws connection runs in its own goroutine
-	http.HandleFunc("/ws", wsHandler)
-
-	err := db.ConnectDB()
-	if err != nil {
-		fmt.Println("database connection error: ", err)
-	}
-
-	err = models.Migrate(db.DB)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//user := models.User{
-	//	Username: "rachitnimje",
-	//	Name:     "rachit",
-	//	Password: "cricket",
-	//}
-	//db.DB.Create(&user)
-
-	// we create a separate goroutine for broadcasting messages
-	go handleMessages()
-
-	fmt.Println("Websocket server started on port 8080")
-
-	err = http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Println("Error starting the websocket server: ", err)
-	}
-}
-
 var upgrade = websocket.Upgrader{
 	CheckOrigin: func(request *http.Request) bool {
 		return true
 	},
 }
 
-func wsHandler(writer http.ResponseWriter, request *http.Request) {
+func WSHandler(writer http.ResponseWriter, request *http.Request) {
 	// receive the http request from the client and upgrade to websocket protocol
 	conn, err := upgrade.Upgrade(writer, request, nil)
 	if err != nil {
@@ -76,6 +42,11 @@ func wsHandler(writer http.ResponseWriter, request *http.Request) {
 		fmt.Printf("Received msg: %s\n", msg)
 		broadcastChannel <- msg
 	}
+}
+
+func StartWSServer() {
+	// we create a separate goroutine for broadcasting messages
+	go handleMessages()
 }
 
 func handleMessages() {
