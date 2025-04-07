@@ -1,10 +1,12 @@
-package db
+package database
 
 import (
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/rachitnimje/chat-app/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
 // when we use _ blank import, we import the package only for the side effects and not the exported functions
@@ -13,15 +15,7 @@ import (
 
 var DB *gorm.DB
 
-const (
-	host     = "localhost"
-	port     = 5432
-	dbname   = "yap_up"
-	user     = "postgres"
-	password = "cricket360"
-)
-
-func ConnectDB() error {
+func ConnectDB(host string, port int, user string, password string, dbname string) error {
 	psqlInfo := fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s", host, port, dbname, user, password)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 	if err != nil {
@@ -29,6 +23,12 @@ func ConnectDB() error {
 	}
 
 	DB = db
-	fmt.Println("successfully connected to db")
+	log.Println("successfully connected to database")
+
+	// migrate the database
+	err = models.Migrate(DB)
+	if err != nil {
+		log.Fatal("error migrating the database: ", err)
+	}
 	return nil
 }

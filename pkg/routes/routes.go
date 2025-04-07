@@ -1,23 +1,15 @@
 package routes
 
 import (
-	"github.com/rachitnimje/chat-app/internal"
-	"github.com/rachitnimje/chat-app/internal/utils"
+	"github.com/rachitnimje/chat-app/internal/handlers"
+	"github.com/rachitnimje/chat-app/internal/server"
 	"net/http"
 )
 
 func NewRouter() *http.ServeMux {
 	router := http.NewServeMux()
-	router.HandleFunc("GET /hello", helloHandler)
-	router.HandleFunc("/ws", internal.WSHandler)
+	router.HandleFunc("GET /hello", handlers.HelloHandler)
+	router.HandleFunc("/ws", server.WSHandler)
 
 	return router
-}
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	data := map[string]string{
-		"Name":     "Rachit",
-		"username": "rachitnimje",
-	}
-	utils.WriteJSONResponse(w, http.StatusOK, data)
 }
