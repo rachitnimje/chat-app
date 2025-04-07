@@ -5,6 +5,7 @@ import (
 	"github.com/rachitnimje/chat-app/internal/database"
 	"github.com/rachitnimje/chat-app/internal/server"
 	"github.com/rachitnimje/chat-app/pkg/routes"
+	"gorm.io/gorm"
 	"log"
 )
 
@@ -12,8 +13,9 @@ func main() {
 	cfg := config.DefaultConfig()
 
 	// connect to database
+	var DB *gorm.DB
 	dbConfig := cfg.Database
-	err := database.ConnectDB(dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.DBName)
+	err := database.ConnectDB(DB, dbConfig.Host, dbConfig.Port, dbConfig.User, dbConfig.Password, dbConfig.DBName)
 	if err != nil {
 		log.Fatal("error connecting to database: ", err)
 	}

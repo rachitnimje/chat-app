@@ -10,5 +10,6 @@ func HelloHandler(w http.ResponseWriter, r *http.Request) {
 		"Name":     "Rachit",
 		"username": "rachitnimje",
 	}
-	utils.WriteJSONResponse(w, http.StatusOK, data)
+
+	utils.WriteSuccessResponse(w, http.StatusOK, "Successfully retrieved user", data)
 }
