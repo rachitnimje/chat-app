@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func StartHTTPServer(router http.Handler, port int) error {
-	address := fmt.Sprintf(":%d", port)
+func StartHTTPServer(router http.Handler, port string) error {
+	address := fmt.Sprintf(":%s", port)
 	return http.ListenAndServe(address, router)
 }

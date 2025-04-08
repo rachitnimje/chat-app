@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/rachitnimje/chat-app/internal/auth"
 	"github.com/rachitnimje/chat-app/internal/models"
 	"github.com/rachitnimje/chat-app/internal/utils"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 )
 
@@ -53,8 +55,14 @@ func (h AuthHandler) Login(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
+	token, err := auth.CreateToken(loginRequest.Username)
+	if err != nil {
+		log.Fatal("Error creating token: ", err)
+		return
+	}
+
 	response := LoginResponse{
-		Token: "login successfully",
+		Token: token,
 	}
 
 	utils.WriteSuccessResponse(writer, http.StatusOK, "Logged in successfully", response)
