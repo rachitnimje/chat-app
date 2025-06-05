@@ -11,7 +11,8 @@ func NewRouter(authHandler *handlers.AuthHandler) *http.ServeMux {
 	router := http.NewServeMux()
 	router.HandleFunc("/ws", server.WSHandler)
 	router.HandleFunc("POST /auth/login", authHandler.Login)
-
+	router.HandleFunc("POST /auth/register", authHandler.Register)
+	
 	// PROTECTED ROUTES
 	router.Handle("GET /hello", auth.Middleware(http.HandlerFunc(handlers.HelloHandler)))
 	return router

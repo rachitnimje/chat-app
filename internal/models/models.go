@@ -13,6 +13,10 @@ type User struct {
 	//CreatedAt time.Time `gorm:"autoCreateTime"`
 }
 
+type Message struct {
+	gorm.Model
+}
+
 func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(&User{})
 }
