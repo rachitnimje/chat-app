@@ -19,8 +19,6 @@ func main() {
 		return
 	}
 
-	log.Printf(".env file loaded")
-
 	auth.InitJWTSecret()
 	cfg := config.DefaultConfig()
 
@@ -38,16 +36,21 @@ func main() {
 		return
 	}
 
+	// initialize websocket with database
+	server.InitWebsocket(db)
+
 	// handlers
 	authHandler := handlers.NewAuthHandler(db)
+	roomHander := handlers.NewRoomHandler(db)
 
 	// routes
-	router := routes.NewRouter(authHandler)
+	router := routes.NewRouter(authHandler, roomHander)
 
 	// start the websocket server
 	server.StartWSServer()
 	port := os.Getenv("PORT")
-	log.Printf("websocket server started on port %s\n", port)
+
+	log.Printf("websocket server starting on port %s\n", port)
 
 	// start the web server
 	err = server.StartHTTPServer(router, port)
