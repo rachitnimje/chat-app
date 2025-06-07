@@ -70,6 +70,7 @@ func (h *RoomHandler) GetRooms(writer http.ResponseWriter, request *http.Request
 }
 
 func (h *RoomHandler) GetMessages(writer http.ResponseWriter, request *http.Request) {
+	// get the room id from the url
 	roomIDStr := request.URL.Query().Get("room_id")
 	roomID, err := strconv.ParseUint(roomIDStr, 10, 32)
 	if err != nil {
@@ -77,6 +78,7 @@ func (h *RoomHandler) GetMessages(writer http.ResponseWriter, request *http.Requ
 		return
 	}
 
+	// query the db for messages with specified room id
 	var messages []models.Message
 	if err = h.db.Where("room_id = ?", roomID).Preload("User").Find(&messages).Error; err != nil {
 		utils.WriteErrorResponse(writer, http.StatusInternalServerError, "Failed to fetch messages")
