@@ -15,8 +15,21 @@ type User struct {
 
 type Message struct {
 	gorm.Model
+	Content string `gorm:"not null"`
+	UserID  uint   `gorm:"not null"`
+	RoomID  uint   `gorm:"not null"`
+	User    User   `gorm:"foreignKey:UserID"`
+	Room    Room   `gorm:"foreignKey:RoomID"`
+}
+
+type Room struct {
+	gorm.Model
+	Name        string `json:"name"`
+	Description string
+	CreatedBy   uint
+	Creator     User `gorm:"foreignKey:CreatedBy"`
 }
 
 func Migrate(db *gorm.DB) error {
-	return db.AutoMigrate(&User{})
+	return db.AutoMigrate(&User{}, &Message{}, &Room{})
 }
