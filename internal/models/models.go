@@ -24,7 +24,7 @@ type Message struct {
 
 type Room struct {
 	gorm.Model
-	Name        string `json:"name"`
+	Name        string `gorm:"not null"`
 	Description string
 	CreatedBy   uint
 	Creator     User `gorm:"foreignKey:CreatedBy"`

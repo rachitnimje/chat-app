@@ -6,6 +6,7 @@ import (
 	"github.com/rachitnimje/chat-app/internal/config"
 	"github.com/rachitnimje/chat-app/internal/database"
 	"github.com/rachitnimje/chat-app/internal/handlers"
+	"github.com/rachitnimje/chat-app/internal/models"
 	"github.com/rachitnimje/chat-app/internal/server"
 	"github.com/rachitnimje/chat-app/pkg/routes"
 	"log"
@@ -34,6 +35,11 @@ func main() {
 	if err != nil {
 		log.Fatal("error connecting to database: ", err)
 		return
+	}
+
+	// migrate the database
+	if err := models.Migrate(db); err != nil {
+		log.Fatal("error migrating database: ", err)
 	}
 
 	// initialize websocket with database
