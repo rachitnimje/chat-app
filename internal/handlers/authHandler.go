@@ -91,14 +91,14 @@ func (h AuthHandler) Register(writer http.ResponseWriter, request *http.Request)
 	}
 
 	// validate the request data
-	if registerRequest.Username != "" || registerRequest.Name != "" || registerRequest.Password != "" {
+	if registerRequest.Username == "" || registerRequest.Name == "" || registerRequest.Password == "" {
 		utils.WriteErrorResponse(writer, http.StatusBadRequest, "All fields are required")
 		return
 	}
 
 	var existingUser models.User
-	result := h.DB.Where("username=?", registerRequest.Username).First(&existingUser)
-	if result.Error != nil {
+	result := h.DB.Where("username = ?", registerRequest.Username).First(&existingUser)
+	if result.Error == nil {
 		utils.WriteErrorResponse(writer, http.StatusConflict, "User already exists")
 		return
 	}
