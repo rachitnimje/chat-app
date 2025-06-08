@@ -41,10 +41,10 @@ func main() {
 
 	// handlers
 	authHandler := handlers.NewAuthHandler(db)
-	roomHander := handlers.NewRoomHandler(db)
+	roomHandler := handlers.NewRoomHandler(db)
 
 	// routes
-	router := routes.NewRouter(authHandler, roomHander)
+	router := routes.NewRouter(authHandler, roomHandler)
 
 	// start the websocket server
 	server.StartWSServer()
