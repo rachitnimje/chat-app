@@ -40,7 +40,7 @@ func (h *RoomHandler) CreateRoom(writer http.ResponseWriter, request *http.Reque
 
 	// decode the create room request from request object
 	var roomReq CreateRoomRequest
-	if err := json.NewDecoder(request.Body).Decode(&roomReq).Error; err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&roomReq); err != nil {
 		utils.WriteErrorResponse(writer, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -50,6 +50,7 @@ func (h *RoomHandler) CreateRoom(writer http.ResponseWriter, request *http.Reque
 		Name:        roomReq.Name,
 		Description: roomReq.Description,
 		CreatedBy:   user.ID,
+		Creator:     user,
 	}
 
 	if err = h.db.Create(&room).Error; err != nil {
